@@ -1,8 +1,7 @@
+import random
 from enum import Enum
 
 from alias import coords, matrix
-
-DEFAULT_EXPECTED_VALUE = 0.1
 
 # A bit wonky because we have to consider the transposition
 POLICY_TO_CHAR = ["<", ">", "^", "v"]
@@ -18,7 +17,9 @@ class Action(Enum):
 def get_initial_expected_value(h: int, w: int, char_grid: matrix[str]) -> matrix[list[float]]:
     return [
         [
-            [DEFAULT_EXPECTED_VALUE] * 4 if char_grid[i][j] not in ("@", "O", "x") else []
+            [random.random(), random.random(), random.random(), random.random()]
+            if char_grid[i][j] not in ("@", "O", "x")
+            else []
             for j in range(h)
         ]
         for i in range(w)

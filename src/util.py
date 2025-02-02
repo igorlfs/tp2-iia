@@ -14,12 +14,17 @@ class Action(Enum):
     RIGHT = 3
 
 
+def get_rand() -> float:
+    """
+    Generates a random number between -1 and 1
+    """
+    return (random.random() * 2) - 1
+
+
 def get_initial_expected_value(h: int, w: int, char_grid: matrix[str]) -> matrix[list[float]]:
     return [
         [
-            [random.random(), random.random(), random.random(), random.random()]
-            if char_grid[i][j] not in ("@", "O", "x")
-            else []
+            [get_rand() for _ in range(4)] if char_grid[i][j] not in ("@", "O", "x") else []
             for j in range(h)
         ]
         for i in range(w)

@@ -15,15 +15,7 @@ from util import (
     print_policy,
 )
 
-STANDARD_REWARD_MAP = {
-    ".": -0.1,
-    ";": -0.3,
-    "+": -1.0,
-    "x": -10.0,
-    "O": 10.0,
-    "@": -inf,
-}
-
+STANDARD_REWARD_MAP = {".": -0.1, ";": -0.3, "+": -1.0, "x": -10.0, "O": 10.0, "@": -inf}
 POSITIVE_REWARD_MAP = {".": 3.0, ";": 1.5, "+": 1.0, "x": 0.0, "O": 10.0, "@": -inf}
 
 LEARNING_RATE = 0.1

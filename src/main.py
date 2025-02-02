@@ -9,6 +9,8 @@ from util import (
     get_initial_expected_value,
     get_new_state_location,
     get_policy,
+    go_left,
+    go_right,
     matrix,
     print_policy,
 )
@@ -29,6 +31,9 @@ DISCOUNT_RATE = 0.9
 EPSILON_GREEDY = 0.1
 
 NUM_OF_ARGS = 6
+
+STOCHASTIC_GO_LEFT = 0.1
+STOCHASTIC_GO_RIGHT = 0.1
 
 SEED = 123456
 random.seed(SEED)
@@ -73,7 +78,16 @@ if __name__ == "__main__":
             if random.random() < EPSILON_GREEDY
             else current_expected_value.index(max(current_expected_value))
         )
-        new_state_location = get_new_state_location(Action(action), current_state)
+
+        actual_action = action
+        if variant == "stochastic":
+            direction = random.random()
+            if direction <= STOCHASTIC_GO_LEFT:
+                actual_action = go_left(Action(action))
+            elif STOCHASTIC_GO_LEFT < direction <= STOCHASTIC_GO_RIGHT + STOCHASTIC_GO_LEFT:
+                actual_action = go_right(Action(action))
+
+        new_state_location = get_new_state_location(Action(actual_action), current_state)
 
         actual_new_state = (
             current_state

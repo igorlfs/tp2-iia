@@ -53,6 +53,30 @@ def get_new_state_location(action: Action, current_state: coords) -> coords:
             return (x, y + 1)
 
 
+def go_left(action: Action) -> Action:
+    match action:
+        case Action.UP:
+            return Action.LEFT
+        case Action.DOWN:
+            return Action.RIGHT
+        case Action.LEFT:
+            return Action.DOWN
+        case Action.RIGHT:
+            return Action.UP
+
+
+def go_right(action: Action) -> Action:
+    match action:
+        case Action.UP:
+            return Action.RIGHT
+        case Action.DOWN:
+            return Action.LEFT
+        case Action.LEFT:
+            return Action.UP
+        case Action.RIGHT:
+            return Action.DOWN
+
+
 def print_policy(h: int, w: int, policy: matrix[str]) -> None:
     for i in range(h):
         for j in range(w):

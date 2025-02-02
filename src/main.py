@@ -62,7 +62,8 @@ if __name__ == "__main__":
 
     current_state = initial_state
 
-    for _ in range(int(num_steps)):
+    episodes = 0
+    while episodes < int(num_steps):
         x, y = current_state
         current_expected_value = expected_value[x][y]
         action = (
@@ -94,6 +95,7 @@ if __name__ == "__main__":
         if is_objetive_or_fire(actual_new_state, char_grid):
             expected_value[x][y][action] = q + LEARNING_RATE * (r - q)
             current_state = initial_state
+            episodes += 1
             continue
 
         new_expected_value = expected_value[new_x][new_y]

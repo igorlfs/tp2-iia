@@ -1,0 +1,51 @@
+[project]
+name = "tp2"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = []
+
+[tool.basedpyright]
+typeCheckingMode = "basic"
+
+[tool.ruff]
+line-length = 100
+[tool.ruff.lint]
+select = [
+    "S",
+    "INP",
+    "PYI",
+    "E",    # Pycodestyle's Errors
+    "W",    # Pycodestyle's Warnings
+    "F",    # Pyflakes
+    "C90",  # McCabe (Ciclomatic Complexity)
+    "I",    # Isort
+    "N",    # Pep8-naming
+    "UP",   # Pyupgrade
+    "RUF",  # Ruff's builtin rules
+    "PERF", # Perflint
+    "NPY",  # Numpy
+    "FLY",  # Flynt
+    "TRY",  # Tryceratops
+    "PL",   # Pylint
+    "PGH",  # Pygrep-hooks
+    "PD",   # Pandas-vet
+    # Flake 8
+    "ANN", # Annotations
+    "BLE", # Blind except
+    "B",   # Bugbear
+    "A",   # Builtins
+    "C4",  # Comprehensions
+    "EM",  # Errmsg
+    "ISC", # Implicit str concat
+    "ICN", # Import Conventions
+    "PIE", # Pie
+    "Q",   # Quotes
+    "RSE", # Raise
+    "RET", # Return
+    "SIM", # Simplify
+    "TC",  # Type checking
+    "TID", # Tidy imports
+    "ARG", # Unused arguments
+    "PTH", # Use Pathlib
+]
+ignore = ["S101"]

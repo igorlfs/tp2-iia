@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch",
+            "type": "debugpy",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/src/main.py",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "qlearning",
+                "maps/mapa_teste.map",
+                "standard",
+                "0",
+                "3",
+                "100_000"
+            ]
+        }
+    ]
+}

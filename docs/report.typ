@@ -57,3 +57,35 @@ Como comentado na @dsm, para realizar a troca para a variação `positive`, some
 // • Análise comparando as políticas geradas pelo método original e suas modificações. Qual o efeito da mudança? A política se alterou? Porque?
 = Análise Comparativa <anac>
 
+Foi realizada uma análise comparativa nos 3 mapas distribuídos junto com a especificação do trabalho: o `mapa_teste`, o `choices` e o `maze` (apesar de o `mapa_teste` estar presente mais por propósitos de depuração). Para o `mapa_teste`, foi usado o exemplo da especificação: começando na posição (0,3), foram dados 100000 passos para a variação `standard`, obtendo-se a seguinte política:
+
+```
+v>>>O
+v@@^x
+v@@^<
+>>>^^
+```
+
+Ela é idêntica à saída presente na especificação e é muito boa, pois consistentemente encaminha o agente para o estado objetivo. Para a variação `posisitve`, a posição inicial foi a mesma, mas foram considerados apenas 1000 passos. Isso se faz necessário porque frequentemente o agente fica "preso" em sequências que não terminam (ou seja, não levam nem ao estado objetivo e nem a um estado com fogo), o que "trava" o contador de passos. Assim, foi obtida a seguinte política:
+
+```
+v<>vO
+<@@<x
+<@@^>
+<<<^<
+```
+
+Ela é consistentemente ruim, pois evita fortemente com que o agente atinga o objetivo. No entanto, isso é completamente esperado, pois o agente não possui "incentivo" para buscar o objetivo, uma vez que pode apenas alternar entre os estados que já produzem recompensa positiva. Para fechar, também foi mantida a posição inicial (0,3) na variação `stochastic`. Ela também foi executada por 100000 passos e a política obtida foi praticamente igual à do `standard`:
+
+```
+v>>>O
+v@@^x
+v@@^v
+>>>^<
+```
+
+Há apenas algumas pequenas diferenças na região próxima ao fogo. Elas poderiam estar associadas a uma questão da seleção dos números aleatórios, dado que o mapa é muito pequeno e o número de passos é relativamente grande. Mas há outra explicação plausível para a pequena diferença: o agente prefere descer na posição logo abaixo do fogo para evitar que, por engano, ao tentar ir para um dos lados, ele caia no fogo.
+
+== `Maze`
+
+== `Choices`

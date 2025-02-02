@@ -9,7 +9,6 @@
             "program": "${workspaceFolder}/src/main.py",
             "cwd": "${workspaceFolder}",
             "args": [
-                "qlearning",
                 "maps/mapa_teste.map",
                 "standard",
                 "0",

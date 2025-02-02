@@ -15,16 +15,16 @@ standard_reward_map = {
 
 positive_reward_map = {".": 3.0, ";": 1.5, "+": 1.0, "x": 0.0, "O": 10.0, "@": -inf}
 
-NUM_OF_ARGS = 7
+NUM_OF_ARGS = 6
 
 if __name__ == "__main__":
     assert len(sys.argv) == NUM_OF_ARGS
 
-    variant = sys.argv[3]
+    variant = sys.argv[2]
 
     reward_mapping = positive_reward_map if variant == "positive" else standard_reward_map
 
-    with Path.open(Path(sys.argv[2])) as f:
+    with Path.open(Path(sys.argv[1])) as f:
         first_line = f.readline()
         w, h = map(int, first_line.strip("\n").split(" "))
         for line in f:

@@ -3,6 +3,7 @@ import sys
 from math import inf
 from pathlib import Path
 
+from alias import matrix
 from map import is_objetive_or_fire, is_out_of_bounds, is_wall
 from util import (
     Action,
@@ -11,7 +12,6 @@ from util import (
     get_policy,
     go_left,
     go_right,
-    matrix,
     print_policy,
 )
 

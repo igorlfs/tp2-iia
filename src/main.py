@@ -1,10 +1,19 @@
+import random
 import sys
 from math import inf
 from pathlib import Path
 
-map_grid: list[list[float]] = []
+from map import is_objetive_or_fire, is_out_of_bounds, is_wall
+from util import (
+    Action,
+    get_initial_expected_value,
+    get_new_state_location,
+    get_policy,
+    matrix,
+    print_policy,
+)
 
-standard_reward_map = {
+STANDARD_REWARD_MAP = {
     ".": -0.1,
     ";": -0.3,
     "+": -1.0,
@@ -13,20 +22,86 @@ standard_reward_map = {
     "@": -inf,
 }
 
-positive_reward_map = {".": 3.0, ";": 1.5, "+": 1.0, "x": 0.0, "O": 10.0, "@": -inf}
+POSITIVE_REWARD_MAP = {".": 3.0, ";": 1.5, "+": 1.0, "x": 0.0, "O": 10.0, "@": -inf}
+
+LEARNING_RATE = 0.1
+DISCOUNT_RATE = 0.9
+EPSILON_GREEDY = 0.1
 
 NUM_OF_ARGS = 6
+
+SEED = 123456
+random.seed(SEED)
 
 if __name__ == "__main__":
     assert len(sys.argv) == NUM_OF_ARGS
 
+    path_to_file_map = sys.argv[1]
     variant = sys.argv[2]
+    x_init = sys.argv[3]
+    y_init = sys.argv[4]
+    num_steps = sys.argv[5]
 
-    reward_mapping = positive_reward_map if variant == "positive" else standard_reward_map
+    reward_mapping = POSITIVE_REWARD_MAP if variant == "positive" else STANDARD_REWARD_MAP
 
-    with Path.open(Path(sys.argv[1])) as f:
-        first_line = f.readline()
-        w, h = map(int, first_line.strip("\n").split(" "))
+    char_grid: matrix[str] = []
+    reward_grid: matrix[float] = []
+
+    with Path.open(Path(path_to_file_map)) as f:
+        W, H = map(int, f.readline().strip("\n").split(" "))
         for line in f:
             mapped_line = [reward_mapping[x] for x in line.strip("\n")]
-            map_grid.append(mapped_line)
+            reward_grid.append(mapped_line)
+            char_grid.append(list(line.strip("\n")))
+
+    # Transpose data
+    char_grid = [list(x) for x in zip(*char_grid, strict=True)]
+    reward_grid = [list(x) for x in zip(*reward_grid, strict=True)]
+
+    # UP, DOWN, LEFT, RIGHT
+    expected_value = get_initial_expected_value(H, W, char_grid)
+
+    initial_state = (int(x_init), int(y_init))
+
+    current_state = initial_state
+
+    for _ in range(int(num_steps)):
+        x, y = current_state
+        current_expected_value = expected_value[x][y]
+        action = (
+            random.randrange(0, 4)
+            if random.random() < EPSILON_GREEDY
+            else current_expected_value.index(max(current_expected_value))
+        )
+        new_state_location = get_new_state_location(Action(action), current_state)
+
+        actual_new_state = (
+            current_state
+            if is_out_of_bounds(H, W, new_state_location) or is_wall(new_state_location, char_grid)
+            else new_state_location
+        )
+        new_x, new_y = actual_new_state
+
+        q = current_expected_value[action]
+        r = reward_grid[new_x][new_y]
+
+        if is_objetive_or_fire(actual_new_state, char_grid):
+            expected_value[x][y][action] = q + LEARNING_RATE * (r - q)
+            current_state = initial_state
+            continue
+
+        new_expected_value = expected_value[new_x][new_y]
+        best_reward_new_state = max(new_expected_value)
+
+        expected_value[x][y][action] = q + LEARNING_RATE * (
+            r + DISCOUNT_RATE * best_reward_new_state - q
+        )
+
+        current_state = actual_new_state
+
+    policy = get_policy(H, W, char_grid, expected_value)
+
+    # Transpose data
+    policy = [list(x) for x in zip(*policy, strict=True)]
+
+    print_policy(H, W, policy)

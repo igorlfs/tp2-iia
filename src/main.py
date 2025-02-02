@@ -27,9 +27,6 @@ NUM_OF_ARGS = 6
 STOCHASTIC_GO_LEFT = 0.1
 STOCHASTIC_GO_RIGHT = 0.1
 
-SEED = 123456
-random.seed(SEED)
-
 if __name__ == "__main__":
     assert len(sys.argv) == NUM_OF_ARGS
 

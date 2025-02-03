@@ -57,7 +57,7 @@ Como comentado na @dsm, para realizar a troca para a variação `positive`, some
 // • Análise comparando as políticas geradas pelo método original e suas modificações. Qual o efeito da mudança? A política se alterou? Porque?
 = Análise Comparativa <anac>
 
-Foi realizada uma análise comparativa nos 3 mapas distribuídos junto com a especificação do trabalho: o `mapa_teste`, o `choices` e o `maze` (apesar de o `mapa_teste` estar presente mais por propósitos de depuração). Para o `mapa_teste`, foi usado o exemplo da especificação: começando na posição (0, 3), foram dados 100000 passos para a variação `standard`, obtendo-se a seguinte política:
+Foi realizada uma análise comparativa nos 3 mapas distribuídos junto com a especificação do trabalho: o `mapa_teste`, o `choices` e o `maze` (apesar de o `mapa_teste` estar presente mais por propósitos de depuração). Para o `mapa_teste`, foi usado o exemplo da especificação: começando na posição (0, 3), foram dados 100 mil passos para a variação `standard`, obtendo-se a seguinte política:
 
 ```
 v>>>O
@@ -84,7 +84,7 @@ v@@^v
 >>>^<
 ```
 
-Há apenas algumas pequenas diferenças na região próxima ao fogo. Elas poderiam estar associadas a uma questão da seleção dos números aleatórios, dado que o mapa é muito pequeno e o número de passos é relativamente grande. Mas há outra explicação plausível para a pequena diferença: o agente prefere descer na posição logo abaixo do fogo para evitar que, por engano, ao tentar ir para um dos lados, ele caia no fogo.
+Há apenas algumas pequenas diferenças na região próxima ao fogo. Elas poderiam estar associadas a uma questão da seleção dos números aleatórios, dado que o mapa é muito pequeno e o número de passos é relativamente grande. Mas há outra explicação plausível para a pequena diferença: o agente prefere descer na posição logo abaixo do fogo para evitar que, por engano, caia no fogo se tentasse ir para um dos lados.
 
 == `Maze`
 
@@ -134,3 +134,48 @@ Ov<^<^v<<<<@
 Ela é relativamente parecida com a do `standard`, no entanto, é possível observar alguns comportamentos peculiares: o agente passa a ter um grande medo de fogo, preferindo constantemente esbarrar nas paredes. Isso é consistente, dado a incerteza do movimento: pode ser mais seguro apenas se mover por engano, do que tentar realizar um movimento mas cair no fogo (como observado inicialmente para o mapa de teste). Além disso, é notável que mesmo em situações em que não há fogo por perto, o agente acaba "esbarrando" em posições proibidas com mais frequência, o que também é atribuído à incerteza.
 
 == `Choices`
+
+O `choices` é também um mapa muito mais complexo do que o mapa de testes. Diferentemente do `maze`, a dificuldade introduzida é, em partes, por existirem muitas possibilidades de caminhos a serem seguidos e o mapa não ser muito simétrico. Similarmente ao `maze`, o caso de estudo foi inspirado no exemplo distribuído junto com o mapa: manteve-se a posição inicial (5, 0), mas foram executados 1 milhão de passos, também para reduzir o número de colisões. Para o `standard`, obteve-se:
+
+```
+@>>v<<<<<>@
+@^@vx@x^@^@
+@^@v@@x^@v@
+@v@vx@x^@<@
+@>>v@@x^>v@
+@v@vx@x^@<@
+@v@v@@x>@^@
+@>>>>O<<<<@
+```
+
+A dificuldade do mapa fica evidente devido ao aumento no número de regiões de colisão, chegando a um total de 4 para esta política. Ela contém uma "volta" ao redor da parede central, que pode ter impactado no aprendizado (de fato, as regiões problemáticas estão todas à direita da "volta"). Esta política não é ideal, mas ainda é fortemente consistente.
+
+Mais uma vez, a execução para a variação `positive` foi um tanto reduzida, considerando apenas 3 mil passos.
+
+```
+@<<<<<<<<<@
+@^@vx@xv@^@
+@^@<@@x^@^@
+@^@<x@x^@v@
+@^><@@xvv>@
+@^@^x@x>@v@
+@>@^@@xv@v@
+@<<^^O>^><@
+```
+
+Tal qual no `maze`, o objetivo é evitado, dado que há preferência para se manter uma região "segura", acumulando uma recompensa maior. Há muitas regiões de colisão, mas que no geral podem estar associadas a essa ideia de acumulação de recompensa. Também de forma semelhante ao `maze`, alguns padrões emergiram, como na segunda coluna e na primeira linha, com a política indicando a mesma ação para a maioria das posições.
+
+Para a variação `stochastic`, também foi usada a mesma configuração do que a padrão. Ao final, obteve-se:
+
+```
+@^>v^<^<<^@
+@^@<x@x>@^@
+@v@v@@x>@<@
+@v@<x@x>@v@
+@>>v@@x>>v@
+@v@vx@x>@v@
+@v@v@@x>@v@
+@>>>>O<<<<@
+```
+
+Mais uma vez, o padrão de evitar fortemente o fogo foi observado: o agente prefere uma constante sequência de colisões com as paredes (ver coluna 8 da política). De maneira geral, as colisões, mesmo não próximas ao fogo, também são mais frequentes, devido à incerteza do movimento. Para esta política, a parte de baixo do mapa ficou super consistente, apresentando "defeitos" apenas nas primeiras linhas.

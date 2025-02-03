@@ -57,7 +57,7 @@ Como comentado na @dsm, para realizar a troca para a variação `positive`, some
 // • Análise comparando as políticas geradas pelo método original e suas modificações. Qual o efeito da mudança? A política se alterou? Porque?
 = Análise Comparativa <anac>
 
-Foi realizada uma análise comparativa nos 3 mapas distribuídos junto com a especificação do trabalho: o `mapa_teste`, o `choices` e o `maze` (apesar de o `mapa_teste` estar presente mais por propósitos de depuração). Para o `mapa_teste`, foi usado o exemplo da especificação: começando na posição (0,3), foram dados 100000 passos para a variação `standard`, obtendo-se a seguinte política:
+Foi realizada uma análise comparativa nos 3 mapas distribuídos junto com a especificação do trabalho: o `mapa_teste`, o `choices` e o `maze` (apesar de o `mapa_teste` estar presente mais por propósitos de depuração). Para o `mapa_teste`, foi usado o exemplo da especificação: começando na posição (0, 3), foram dados 100000 passos para a variação `standard`, obtendo-se a seguinte política:
 
 ```
 v>>>O
@@ -75,7 +75,7 @@ v<>vO
 <<<^<
 ```
 
-Ela é consistentemente ruim, pois evita fortemente com que o agente atinga o objetivo. No entanto, isso é completamente esperado, pois o agente não possui "incentivo" para buscar o objetivo, uma vez que pode apenas alternar entre os estados que já produzem recompensa positiva. Para fechar, também foi mantida a posição inicial (0,3) na variação `stochastic`. Ela também foi executada por 100000 passos e a política obtida foi praticamente igual à do `standard`:
+Ela é consistentemente ruim, pois evita fortemente com que o agente atinga o objetivo. No entanto, isso é completamente esperado, pois o agente não possui "incentivo" para buscar o objetivo, uma vez que pode apenas alternar entre os estados que já produzem recompensa positiva. Para fechar, também foi mantida a posição inicial (0, 3) na variação `stochastic`. Ela também foi executada por 100 mil passos e a política obtida foi praticamente igual à do `standard`:
 
 ```
 v>>>O
@@ -87,5 +87,50 @@ v@@^v
 Há apenas algumas pequenas diferenças na região próxima ao fogo. Elas poderiam estar associadas a uma questão da seleção dos números aleatórios, dado que o mapa é muito pequeno e o número de passos é relativamente grande. Mas há outra explicação plausível para a pequena diferença: o agente prefere descer na posição logo abaixo do fogo para evitar que, por engano, ao tentar ir para um dos lados, ele caia no fogo.
 
 == `Maze`
+
+O `maze` é um mapa muito mais complexo do que o mapa de testes. Sua estrutura é semelhante a um pequeno labirinto, contando com muitas paredes e regiões com fogo. O caso de estudo foi inspirado no exemplo distribuído junto com os mapas: a posição inicial é (10, 0), mas são dados 1 milhão de passos para o `standard` (ao invés de apenas 300 mil, como no exemplo original). O intuito deste número alto foi lidar com regiões em que a política indicava ou uma colisão com as paredes, ou uma colisão com a borda do campo. Foi obtida a seguinte política:
+
+```
+x@x@x@x@x@v@
+v<<<<<<<<<<@
+vx@@@@@@@@^@
+vx@v<<>vv>^@
+vx@v@@@@@@@@
+vx@>>>>>>>vx
+vx@@@@@@@@v@
+O<<<<<<<<<<@
+```
+
+Ela é bastante consistente, apesar de ainda ter duas regiões, no meio do labirinto, que indicam colisões com as paredes. Para a variação `positive`, foi usada a mesma posição inicial, mas devido à restrição de tempo comentada anteriormente, foram dados apenas 2000 passos. A política obtida foi:
+
+```
+x@x@x@x@x@<@
+v^<<<<<<<<<@
+^x@@@@@@@@^@
+<x@^v<^^v^<@
+^x@^@@@@@@@@
+>x@^><v>^>vx
+<x@@@@@@@@^@
+O^^^>v<v<v^@
+```
+
+Primeiramente, a discrepância mais clara dessa execução foi a extrema variância no tempo de execução. Algumas execuções foram muito demoradas, outras nem chegaram a terminar em tempo hábil. De fato, é possível que este exemplo de política não seja realmente "representativo" das execuções médias com 2000 passos, para a variação `positive` no mapa `maze`. De qualquer modo, a política obtida não é muito boa, chegando a incluir até alguns "pulos no fogo". Isso provavelmente está associado à baixa quantidade de passos (que, novamente, não pode ser muito mais elevada devido à variância e restrições de tempo).
+
+Mesmo assim, alguns padrões emergiram: a segunda linha apresenta um comportamento muito "natural", semelhante à execução `standard` (provavelmente um mecanismo para fugir da alta concentração de fogos). Apesar disso, não é possível deixar de notar a quantidade escancarada de posições de colisão, seja com as paredes ou com as bordas do mapa, que também podem estar associadas à baixa quantidade de passos, bem como à tendência do `positive` de "não querer" atingir o objetivo, preferindo gerar ciclos em regiões que sejam minimamente "seguras" (sem fogos). A última observação que vale destacar nesse caso, é o fato de o agente realmente tentar "se esforçar" para não atingir o objetivo, visto que nenhuma das regiões próximas do objetivo está apontada para ele (como é de se esperar em um `positive`).
+
+Para o estocástico, na mesma configuração do `standard`, foi obtida a seguinte política:
+
+```
+x@x@x@x@x@v@
+v^v^v<v>v>v@
+<x@@@@@@@@v@
+<x@<v^<<<<<@
+vx@v@@@@@@@@
+<x@>>>>>>><x
+vx@@@@@@@@v@
+Ov<^<^v<<<<@
+```
+
+Ela é relativamente parecida com a do `standard`, no entanto, é possível observar alguns comportamentos peculiares: o agente passa a ter um grande medo de fogo, preferindo constantemente esbarrar nas paredes. Isso é consistente, dado a incerteza do movimento: pode ser mais seguro apenas se mover por engano, do que tentar realizar um movimento mas cair no fogo (como observado inicialmente para o mapa de teste). Além disso, é notável que mesmo em situações em que não há fogo por perto, o agente acaba "esbarrando" em posições proibidas com mais frequência, o que também é atribuído à incerteza.
 
 == `Choices`
